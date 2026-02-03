@@ -1,3 +1,11 @@
+/**
+ * STATE.JS - Central State Management
+ * This file maintains the single source of truth for our invoice application.
+ * All invoice data is stored here and can be accessed/modified by other modules.
+ * 
+ * VERSION: 2.0 - Auto-incrementing Invoice Numbers
+ */
+
 const state = {
   // Business information
   business: {
@@ -24,7 +32,7 @@ const state = {
   total: 0,          // Final amount after tax and discount
 
   // Invoice metadata
-  invoiceNumber: 'INV-0001',
+  invoiceNumber: 'INV-001',
   issueDate: new Date().toISOString().split('T')[0],  // Today's date in YYYY-MM-DD
   dueDate: '',
 
@@ -149,11 +157,32 @@ function resetState() {
 
 /**
  * Generate a new invoice number
+ * This checks existing invoices and increments from the highest number
  * @returns {string} A new invoice number
  */
 function generateInvoiceNumber() {
-  const timestamp = Date.now();
-  return `INV-${timestamp.toString().slice(-6)}`;
+  // Check if we have access to storage functions
+  if (typeof getAllInvoices === 'function') {
+    const existingInvoices = getAllInvoices();
+    
+    if (existingInvoices && existingInvoices.length > 0) {
+      // Extract numbers from existing invoice numbers
+      const numbers = existingInvoices.map(inv => {
+        const match = inv.invoiceNumber.match(/INV-(\d+)/);
+        return match ? parseInt(match[1]) : 0;
+      });
+      
+      // Get the highest number and increment
+      const maxNumber = Math.max(...numbers);
+      const nextNumber = maxNumber + 1;
+      
+      // Pad with zeros to make it at least 3 digits
+      return `INV-${String(nextNumber).padStart(3, '0')}`;
+    }
+  }
+  
+  // If no invoices exist or storage not available, start with 001
+  return 'INV-001';
 }
 
 /**

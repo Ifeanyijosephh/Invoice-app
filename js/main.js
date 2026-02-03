@@ -2,6 +2,8 @@
  * MAIN.JS - Application Entry Point
  * This file initializes the application and coordinates all modules
  * It runs when the page loads and sets everything up
+ * 
+ * VERSION: 2.0 - Smart Invoice Number Generation
  */
 
 /**
@@ -9,12 +11,11 @@
  */
 document.addEventListener('DOMContentLoaded', function() {
   console.log('SwiftInvoice - Initializing...');
+  console.log('Version 2.0 - Auto-incrementing Invoice Numbers');
   
-  // Generate initial invoice number
+  // Generate initial invoice number based on existing invoices
   const currentState = getState();
-  if (!currentState.invoiceNumber || currentState.invoiceNumber === 'INV-001') {
-    currentState.invoiceNumber = generateInvoiceNumber();
-  }
+  currentState.invoiceNumber = generateInvoiceNumber();
   
   // Set initial dates
   const today = new Date();
@@ -45,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
   updatePreview();
   
   console.log('SwiftInvoice - Ready!');
+  console.log('Current Invoice Number:', currentState.invoiceNumber);
   
   // Check storage statistics (for debugging)
   const stats = getStorageStats();
@@ -87,7 +89,7 @@ function createNewInvoice() {
   if (confirm('Create a new invoice? Any unsaved changes will be lost.')) {
     resetState();
     
-    // Generate new invoice number
+    // Generate new invoice number (will auto-increment from last saved)
     const state = getState();
     state.invoiceNumber = generateInvoiceNumber();
     
@@ -161,7 +163,7 @@ window.addEventListener('offline', function() {
  * Console welcome message
  */
 console.log('%c SwiftInvoice ', 'background: #10b981; color: white; font-size: 20px; padding: 10px;');
-console.log('%c Invoice Management System ', 'color: #10b981; font-size: 14px;');
+console.log('%c Invoice Management System v2.0 ', 'color: #10b981; font-size: 14px;');
 console.log('%c Keyboard Shortcuts: ', 'font-weight: bold; font-size: 12px;');
 console.log('  Ctrl/Cmd + S : Save Invoice');
 console.log('  Ctrl/Cmd + P : Download PDF');

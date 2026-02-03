@@ -361,7 +361,37 @@ function handleSaveInvoice() {
   const success = saveInvoice(state);
   
   if (success) {
-    alert(`Invoice ${state.invoiceNumber} saved successfully!`);
+    const savedInvoiceNumber = state.invoiceNumber;
+    alert(`Invoice ${savedInvoiceNumber} saved successfully!`);
+    
+    // Ask user if they want to create a new invoice
+    const createNew = confirm('Invoice saved! Would you like to create a new invoice?');
+    
+    if (createNew) {
+      // Reset and create new invoice
+      resetState();
+      const newState = getState();
+      newState.invoiceNumber = generateInvoiceNumber();
+      
+      // Set dates
+      const today = new Date();
+      newState.issueDate = today.toISOString().split('T')[0];
+      const dueDate = new Date(today);
+      dueDate.setDate(dueDate.getDate() + 14);
+      newState.dueDate = dueDate.toISOString().split('T')[0];
+      
+      // Add one empty item
+      addItem({
+        description: '',
+        quantity: 1,
+        price: 0
+      });
+      
+      // Reload the form
+      loadFormData();
+      
+      console.log('New invoice created:', newState.invoiceNumber);
+    }
   } else {
     alert('Failed to save invoice. Please try again.');
   }
